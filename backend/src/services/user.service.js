@@ -91,8 +91,9 @@ class UserService {
                 return {response: false, message: result.error, data:null}
             }
         }
-        console.log(verificationCode)
-        return {response: true, message: "Success. Email Verification Code was send to your Email address.", data:null}
+        
+        console.log(verificationCode, '')
+        return {response: true, message: "Success. Email Verification Code was send to your Email address.", data:verificationCode}
     }
 
     static async getAllUsers() {
@@ -269,9 +270,9 @@ class UserService {
         rawData.role = Role.General;
         rawData.get_bnb = false;
         const { confirm_password, email_verify, ...registerData } = rawData;
-
+        
         const result = await UserModel.create(registerData);
-
+        
         if (!result) {
             return {response:false, message:"An error was caused during user registeration.", data:null}
         }

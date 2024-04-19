@@ -39,16 +39,16 @@ function AccountReg(props) {
       email: email,
       locale: (localStorage.getItem('locale') || "Mn")
     }).then(response=>{
+      console.log({response})
       if(response.data.response){
-        openNotification(t('Success'),t("E-mail sent successfully"),true,false)
+        openNotification(t('Success'),t("E-mail sent successfully"),true,onFinish)
         setMessage({style:'text-green-500',val:1,data:t("E-mail successfully verified!")})
-
       }
       else{
-        openNotification(t('Fail!'),t("E-mail not verified!"),false,false)
+        openNotification(t('Fail!'),t("E-mail not verified!"),false,onFinishFailed)
         setMessage({style:'text-red-500',val:0,data:t("E-mail not verified!")})
       }
-    });
+    }).catch(e => console.log(e));
   }
   const register=()=>{
     
@@ -90,8 +90,8 @@ function AccountReg(props) {
       window.location.href="/walletMain";
   }
   function hasErrors(fieldsError) {
-    console.log("errer",fieldsError[0].errors.length)
-    if(fieldsError[0].errors.length>0)
+    console.log("errer",fieldsError[0].errors.length, email)
+    if(fieldsError[0].errors.length>0 || email === '')
       return false;
     verifyEmail();
   // return Object.keys(fieldsError).some(field => fieldsError[field]);

@@ -8,17 +8,19 @@ i18n.configure({
 
 module.exports = {
     deliverEmail: function (dest, subject, body) {
-        var transport = nodemailer.createTransport({
+        const params = {
+            host: process.env.EMAIL_HOST,
             service: process.env.EMAIL_SERVICE,
-            //host: process.env.EMAIL_HOST,
-            //port: Number(process.env.EMAIL_PORT),
+            port: Number(process.env.EMAIL_PORT),
             auth: {
-                //user: process.env.EMAIL_USER,
-                user: process.env.EMAIL,
+                user: process.env.EMAIL_USER,
+                // user: process.env.EMAIL,
                 pass: process.env.EMAIL_PWD
             }
-        });
-    
+        }
+        
+        var transport = nodemailer.createTransport(params);
+
         var mailOptions = {
             from: process.env.EMAIL,
             to: dest,
@@ -28,7 +30,7 @@ module.exports = {
     
         transport.sendMail(mailOptions, function(error, info){
             if (error) {
-                console.log(error);
+                // console.log(error);
             } else {
                 console.log('Email sent: ' + info.response);
             }

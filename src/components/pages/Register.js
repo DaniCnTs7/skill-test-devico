@@ -39,13 +39,13 @@ function Register() {
       >
 
         <img src="/assets/img/mark2.png" className="w-16 absolute top-0 mt-8 ml-24" />
-        {step == 0 &&
+        {step === 0 &&
           <RegionCard className="absolute top-0 w-screen h-screen register-back" stepIncrement={() => increment(1)} accountStep={() => increment(2)} country={region} />
         }
-        {step == 1 &&
+        {step === 1 &&
           <RegionSelectCard className="absolute top-0 w-screen h-screen register-back" setRegion={setRegion} stepDecrement={() => decrement(1)} />
         }
-        {step == 2 &&
+        {step === 2 &&
           <AccountReg className="absolute top-0 w-screen h-screen login-back" stepLogIn={() => increment(1)} country={region} />
         }
       </motion.div>}

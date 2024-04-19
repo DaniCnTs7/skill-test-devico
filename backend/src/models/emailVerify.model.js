@@ -10,7 +10,7 @@ class EmailVerifyModel {
     findOne = async (params) => {
         try {
             const { columnSet, values } = multipleColumnSet(params)
-            
+
             const sql = `SELECT * FROM ${this.tableName}
             WHERE ${columnSet}`;
 

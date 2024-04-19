@@ -1,5 +1,5 @@
 const dotenv = require('dotenv');
-dotenv.config();
+dotenv.config({path:'./backend/.env'});
 const mysql2 = require('mysql2');
 
 class DBConnection {
@@ -13,9 +13,9 @@ class DBConnection {
 
         this.checkConnection();
     }
-
-    checkConnection() {
-        this.db.getConnection((err, connection) => {
+    
+    async checkConnection() {
+        await this.db.getConnection((err, connection) => {
             if (err) {
                 if (err.code === 'PROTOCOL_CONNECTION_LOST') {
                     console.error('Database connection was closed.');

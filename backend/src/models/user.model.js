@@ -37,12 +37,12 @@ class UserModel {
         }
     }
 
-    create = async ({ email, password, country, invite_code, role = Role.General, get_bnb = false}) => {
+    create = async ({ email, password, country, invite_code, role = Role.General}) => {
         try {
             const sql = `INSERT INTO ${this.tableName}
-            (email, password, country, invite_code, role, get_bnb) VALUES (?,?,?,?,?,?)`;
-
-            const result = await query(sql, [email, password, country, invite_code, role, get_bnb]);
+            (email, password, country, invite_code, role) VALUES (?,?,?,?,?)`;
+            console.log({sql})
+            const result = await query(sql, [email, password, country, invite_code, role]);
             const affectedRows = result ? result.affectedRows : 0;
 
             return affectedRows;
