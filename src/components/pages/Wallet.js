@@ -1,7 +1,7 @@
 import React, { useState, useEffect,useCallback, useContext } from 'react';
 import { Button,Row,Col,Drawer,Typography  } from 'antd';
 import { Link ,useParams} from "react-router-dom";
-import {AiOutlineLoading3Quarters,AiFillCloseCircle,AiOutlineCheck,AiTwotoneEnvironment,AiOutlineLogout} from "react-icons/ai"
+import {AiOutlineLoading3Quarters,AiFillCloseCircle,AiOutlineCheck,AiTwotoneEnvironment,AiOutlineLogout, AiOutlineWallet} from "react-icons/ai"
 import ReactLoading from 'react-loading';
 import QRCode from "qrcode.react";
 import axios from 'axios';
@@ -21,6 +21,7 @@ import openNotification from "../helpers/notification";
 import WalletLoadingModal from "../component/WalletComponents/WalletLoadingModal";
 import {SERVER_URL, networks} from "../../constants/env";
 import {getTokenBaseInfo, getTokenBalance, getTokenPriceInUsd} from "../../utils/tokenUtils";
+import Web3 from 'web3'
 
 const { Paragraph } = Typography;
 const initTokenList=[
@@ -39,6 +40,7 @@ function Wallet() {
   const [stopMode, setStopMode] = useState(true);
   const [visible, setVisible] = useState(false);
   const [transations,setTransactions] = useState([]);
+  const [connectedAccount, setConnectedAccount] = useState(null);
   const {id, presaleToken, chainId} = useParams();
   const presaleData = useContext(PresaleContext);
   const walletData = useContext(WalletContext);
@@ -46,12 +48,24 @@ function Wallet() {
   const serverUrl =SERVER_URL;
   let frequent;
 
+  const getConnectedAccount = async () => {
+    if (window.ethereum) {
+      const web3 = new Web3(window.ethereum)
+      const accounts = await web3.eth.getAccounts()
+      setConnectedAccount(accounts[0])
+    }
+  }
+
+  if (window.ethereum) window.ethereum.on('accountsChanged', async (accounts) => {
+    if (!accounts.includes(connectedAccount)) setConnectedAccount(null)
+  })
 
   useEffect(()=>{
     if(id)
       setIdx(parseInt(id));
     getAssets();
     getTransaction();
+    getConnectedAccount()
     frequent=setInterval(getAssets, 1000 * 60);
     if(!publicKey)
       openNotification("Wallet Access failed.","You are not allowed!",false,()=>window.location.href="/walletMain")
@@ -187,8 +201,19 @@ function Wallet() {
     if(tokensInfo.length>0)
       setStopMode(false);
   },[tokensInfo])
-
-
+  
+  const connectWallet = async () => {
+    if (!window.ethereum) return openNotification(t('Warning'),t("Please install metamask on your browser"),false,() => setConnectedAccount(null))
+    try {
+      const accounts = await window.ethereum.request({
+          method: "eth_requestAccounts",
+      });
+      setConnectedAccount(accounts[0])
+    } catch(e) {
+      openNotification(t('Error'),t('Error connecting to your wallet'),false,() => console.log('error connection to metamask'))
+    }
+    
+  }
 
   return (
     <>{
@@ -268,7 +293,20 @@ function Wallet() {
             <Col xs={{span:24}} md={{span:6}} className="bg-white border-l-8 border-gray-200 myColor1">
               <Row className="border-b-8 border-gray-200 p-4 text-center">
                 
-                <Col span={12} className="flex flex-col items-center">
+              <Col span={8} className='flex flex-col items-center'>
+                  <AiOutlineWallet size={20} className={'inline mb-1 mr-1'} />
+                  <div className='text-lg text-overflow w-full'>
+                    {!connectedAccount ?
+                      <a onClick={connectWallet}>
+                        <p className="text-lg text-overflow">{t("Connect")}</p>
+                        <p className="text-lg text-overflow">{t("to your Wallet")}</p>
+                      </a>
+                      : <p className='text-lg text-overflow overflow-ellipsis'>{connectedAccount}</p>
+                    }
+                  </div>
+                </Col>
+
+                <Col span={8} className="flex flex-col items-center">
                   {
                     connection?
                       <AiTwotoneEnvironment size={20} className="text-green-500 inline mb-1 mr-1"/>
@@ -284,7 +322,7 @@ function Wallet() {
                   </a>
                   </div>
                 </Col>
-                <Col span={12} className="flex flex-col items-center">
+                <Col span={8} className="flex flex-col items-center">
                   <AiOutlineLogout size={20} className="myColor1 inline mb-1 mr-1"/>
                   <div className=" text-overflow w-full">
                     <a onClick={logout}>
