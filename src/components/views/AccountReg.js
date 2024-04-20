@@ -39,7 +39,6 @@ function AccountReg(props) {
       email: email,
       locale: (localStorage.getItem('locale') || "Mn")
     }).then(response=>{
-      console.log({response})
       if(response.data.response){
         openNotification(t('Success'),t("E-mail sent successfully"),true,onFinish)
         setMessage({style:'text-green-500',val:1,data:t("E-mail successfully verified!")})
@@ -90,7 +89,6 @@ function AccountReg(props) {
       window.location.href="/walletMain";
   }
   function hasErrors(fieldsError) {
-    console.log("errer",fieldsError[0].errors.length, email)
     if(fieldsError[0].errors.length>0 || email === '')
       return false;
     verifyEmail();
